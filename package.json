@@ -20,5 +20,8 @@
     "html-minifier-terser": "^7.2.0",
     "serve": "^14.2.5",
     "terser": "^5.44.1"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
   }
 }

@@ -79,11 +79,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 1.5rem;
-    max-width: 640px;
+    padding: 2rem 1.5rem;
+    max-width: 480px;
+    /* Constrained Mobile Width */
     margin: 0 auto;
     text-align: center;
     width: 100%;
+    gap: 2rem;
+    /* Consistent Vertical Flow */
 }
 
 .brand-header {
@@ -91,7 +94,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: 0.5rem;
+    width: 100%;
 }
 
 .hero-logo {
@@ -101,20 +104,19 @@ body {
 }
 
 .hero h1 {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 800;
     letter-spacing: -0.05em;
     color: hsl(var(--foreground));
     margin: 0;
-    /* Remove margin as it's handled by gap */
 }
 
 .subtitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
     color: hsl(var(--muted-foreground));
-    margin-bottom: 3rem;
-    max-width: 420px;
+    width: 100%;
     font-weight: 400;
+    margin: 0;
 }
 
 /* ===== Cards & Steps ===== */
@@ -123,7 +125,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     width: 100%;
-    margin-bottom: 3rem;
+    margin: 0;
 }
 
 .step-card {
@@ -131,9 +133,12 @@ body {
     color: hsl(var(--card-foreground));
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
-    padding: 1.5rem;
+    padding: 1.25rem;
     text-align: left;
     transition: border-color 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .step-card:hover {
@@ -144,7 +149,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .step-num {
@@ -153,8 +158,8 @@ body {
     justify-content: center;
     width: 24px;
     height: 24px;
+    min-width: 24px;
     background-color: hsl(var(--secondary));
-    /* Muted background */
     color: hsl(var(--foreground));
     font-size: 0.75rem;
     font-weight: 600;
@@ -164,12 +169,14 @@ body {
 .step-header h3 {
     font-size: 0.875rem;
     font-weight: 600;
+    line-height: 1.2;
 }
 
 .step-card p {
-    font-size: 0.875rem;
+    font-size: 0.825rem;
     color: hsl(var(--muted-foreground));
     line-height: 1.4;
+    margin-top: auto;
 }
 
 /* ===== Buttons ===== */
@@ -183,12 +190,12 @@ button {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 2.5rem;
-    /* h-10 */
+    height: 3rem;
+    /* Larger Touch Target */
     padding: 0 1rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
-    border-radius: calc(var(--radius) - 2px);
+    border-radius: var(--radius);
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border: none;
@@ -204,11 +211,12 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 2.5rem;
+    height: 3rem;
+    /* Larger Touch Target */
     padding: 0 1rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
-    border-radius: calc(var(--radius) - 2px);
+    border-radius: var(--radius);
     background-color: transparent;
     border: 1px solid hsl(var(--border));
     color: hsl(var(--foreground));
@@ -222,7 +230,7 @@ button {
 /* ===== Install Section ===== */
 .install-section {
     width: 100%;
-    margin-bottom: 2rem;
+    margin: 0;
 }
 
 .install-hint {
@@ -234,7 +242,10 @@ button {
 /* ===== Manual Input ===== */
 .manual-section {
     width: 100%;
-    /* max-width controlled by hero parent */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0;
 }
 
 .or-divider {
@@ -242,7 +253,7 @@ button {
     align-items: center;
     color: hsl(var(--muted-foreground));
     font-size: 0.75rem;
-    margin-bottom: 1.5rem;
+    margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
@@ -267,13 +278,13 @@ button {
 
 .url-input-group input {
     flex: 1;
-    height: 2.75rem;
-    padding: 0 0.875rem;
+    height: 3rem;
+    padding: 0 1rem;
     border-radius: var(--radius);
     border: 1px solid hsl(var(--input));
     background-color: transparent;
     color: hsl(var(--foreground));
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -287,9 +298,9 @@ button {
 /* ===== Info Section ===== */
 .info-section {
     width: 100%;
-    margin-top: 2rem;
     border-top: 1px solid hsl(var(--border));
     padding-top: 1.5rem;
+    margin: 0;
 }
 
 .how-it-works {
@@ -322,7 +333,7 @@ button {
 .how-it-works p {
     line-height: 1.5;
     text-align: center;
-    max-width: 80%;
+    max-width: 90%;
     margin: 0 auto;
 }
 
@@ -359,40 +370,14 @@ footer .note {
 
 .state {
     width: 100%;
-    max-width: 480px;
-    /* Default for single column */
+    max-width: 420px;
     margin: 0 auto;
+    text-align: center;
 }
 
-/* Event State Layout - Side by Side on Desktop */
+/* Event Card Specifics */
 #event-state {
-    max-width: 900px;
-    /* Wider container for side-by-side */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-}
-
-@media (min-width: 768px) {
-    #event-state {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: center;
-    }
-
-    .meme-container {
-        flex: 1;
-        max-width: 380px;
-        margin-bottom: 0;
-        text-align: right;
-        padding-top: 1rem;
-    }
-
-    .event-card {
-        flex: 1.2;
-        max-width: 480px;
-    }
+    text-align: left;
 }
 
 .spinner {
@@ -409,26 +394,6 @@ footer .note {
     to {
         transform: rotate(360deg);
     }
-}
-
-/* ===== Meme Section ===== */
-.meme-container {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.meme-image {
-    width: 100%;
-    max-width: 280px;
-    border-radius: var(--radius);
-    margin-bottom: 0.5rem;
-}
-
-.meme-caption {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: hsl(var(--foreground));
-    margin-top: 0.5rem;
 }
 
 .event-card {
@@ -449,7 +414,6 @@ footer .note {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    /* full rounded */
     border: 1px solid transparent;
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
@@ -457,7 +421,6 @@ footer .note {
     background-color: hsl(var(--secondary));
     color: hsl(var(--secondary-foreground));
     text-transform: capitalize;
-    /* Cleaner than uppercase */
 }
 
 .event-card h1 {
@@ -504,7 +467,6 @@ footer .note {
     color: hsl(var(--muted-foreground));
 }
 
-/* Event Actions */
 .event-actions {
     display: flex;
     flex-direction: column;
@@ -539,7 +501,6 @@ footer .note {
 .error-card {
     border: 1px solid hsl(var(--destructive));
     background-color: #fef2f2;
-    /* Light red */
     border-radius: var(--radius);
     padding: 2rem;
 }
@@ -559,20 +520,15 @@ footer .note {
 
 /* Mobile Responsive */
 @media (max-width: 640px) {
-    .hero {
-        padding: 2rem 1rem;
-    }
 
-    .hero h1 {
-        font-size: 1.75rem;
-    }
-
-    .steps-grid {
-        grid-template-columns: 1fr;
+    .primary-btn,
+    .secondary-btn,
+    .url-input-group input {
+        height: 3rem;
+        /* Enforce large touch targets */
     }
 }
 
-/* PWA Hidden */
 #install-btn.hidden {
     display: none;
 }

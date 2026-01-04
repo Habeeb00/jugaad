@@ -26,6 +26,10 @@
     <link rel="icon" type="image/png" href="/icon.png">
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="stylesheet" href="/styles.css">
+    <script type="module">
+        import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics/+esm';
+        inject();
+    </script>
 </head>
 
 <body>
@@ -117,10 +121,7 @@
                 </div>
 
                 <div id="event-state" class="state hidden">
-                    <div class="meme-container">
-                        <img src="/hulk.png" alt="Here's your calendar invite bro" class="meme-image">
-                        <p class="meme-caption">Here's your calendar invite bro</p>
-                    </div>
+                    <!-- Meme removed -->
                     <div class="event-card">
                         <div class="event-badge">
                             <span id="event-type">Workshop</span>
