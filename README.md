@@ -16,7 +16,7 @@
 
 Jugad is a PWA, meaning it works best when installed on your home screen:
 
-1. Open **[jugadhub.vercel.app](https://jugadhub.vercel.app)** in Chrome or Safari.
+1. Open **[jugadhub.vercel.app](https://jugadhub.vercel.app)** in Chrome based browsers.
 2. Click Install
 3. Now you can find "Jugad" in your app drawer!
 
