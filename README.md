@@ -7,7 +7,7 @@
 ## 🚀 Features
 
 - **Instant Parsing**: Automatically extracts event title, date, time, venue, and description from TinkerHub event pages.
-- **PWA Share Target**: Integrated directly into your phone's "Share" menu. Share a URL from Chrome/WhatsApp directly to Jugad.
+- **PWA Share Target**: Integrated directly into your phone's "Share" menu. Share a URL from Chrome/WhatsApp directly to Jugad and it gives u calendar invites.
 - **Offline Ready**: Works offline thanks to robust Service Worker caching.
 - **Zero Friction**: No login required. Just paste the link or share it.
 - **Mobile First**: Clean, app-like interface optimized for any screen size.
@@ -17,9 +17,8 @@
 Jugad is a PWA, meaning it works best when installed on your home screen:
 
 1. Open **[jugadhub.vercel.app](https://jugadhub.vercel.app)** in Chrome or Safari.
-2. Tap the **Share** button (iOS) or **Three Dots** menu (Android).
-3. Select **"Add to Home Screen"**.
-4. Now you can find "Jugad" in your app drawer!
+2. Click Install
+3. Now you can find "Jugad" in your app drawer!
 
 ## 🛠️ Usage
 
