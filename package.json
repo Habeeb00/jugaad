@@ -1,0 +1,21 @@
+{
+  "name": "add-to-calendar-pwa",
+  "version": "1.0.0",
+  "description": "Share TinkerHub event links to add them to your calendar",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "start": "npx serve . -p 3000"
+  },
+  "keywords": [
+    "pwa",
+    "calendar",
+    "tinkerhub",
+    "share-target"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.5"
+  }
+}
