@@ -1,12 +1,12 @@
 {
-    "name": "Jugaad",
-    "short_name": "Jugaad",
-    "description": "Add TinkerHub events to your calendar instantly",
+    "name": "Add to Calendar",
+    "short_name": "Add2Cal",
+    "description": "Share TinkerHub event links to add them to your calendar instantly",
     "start_url": "/",
     "id": "/",
     "display": "standalone",
-    "background_color": "#eeebe1",
-    "theme_color": "#000000",
+    "background_color": "#0f0f23",
+    "theme_color": "#6366f1",
     "orientation": "portrait",
     "scope": "/",
     "categories": [

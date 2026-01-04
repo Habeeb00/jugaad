@@ -1,27 +1,41 @@
-/* ===== CSS Variables & Reset ===== */
+/* ===== CSS Variables & Style System ===== */
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #10b981;
-    --accent: #f59e0b;
-    --bg-dark: #0f0f23;
-    --bg-card: #1a1a2e;
-    --bg-elevated: #25253d;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0b0;
-    --text-muted: #6b6b80;
-    --border: #2a2a45;
+    /* TinkerSpace Theme Colors */
+    --primary: #000000;
+    --primary-dark: #333333;
+    --primary-light: #666666;
+    --secondary: #374151;
+    --accent: #000000;
+
+    /* Backgrounds */
+    --bg-body: #eeebe1;
+    --bg-card: #ffffff;
+    --bg-elevated: #ffffff;
+
+    /* Text */
+    --text-primary: #000000;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+
+    /* Borders & Lines */
+    --border: #eaeaea;
+    /* Light grey for subtle separation */
+    --border-strong: #000000;
+
+    /* Status */
     --error: #ef4444;
     --success: #10b981;
-    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
+
+    /* Shadows - Minimal/None */
+    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-card: 2px 2px 0px rgba(0, 0, 0, 0.05);
+    /* Slight hard shadow */
+
+    /* Radius - Sharp/Brutalist */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
 }
 
 * {
@@ -36,8 +50,8 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-dark);
+    font-family: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-body);
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
@@ -48,10 +62,7 @@ body {
 /* ===== App Container ===== */
 .app {
     min-height: 100vh;
-    background: 
-        radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
-        var(--bg-dark);
+    background: var(--bg-body);
 }
 
 .page {
@@ -64,8 +75,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== Landing Page ===== */
@@ -76,62 +94,38 @@ body {
     text-align: center;
 }
 
+/* Logo Styles */
 .logo-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
     margin-bottom: 2rem;
 }
 
 .calendar-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--gradient-primary);
+    width: 64px;
+    height: 64px;
+    background: var(--primary);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-glow);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-icon svg {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     color: white;
 }
 
-.plus-icon {
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: var(--text-muted);
-}
-
-.tinkerhub-logo img {
-    height: 48px;
-    filter: brightness(0) invert(1);
-}
-
-.fallback-logo {
-    width: 56px;
-    height: 56px;
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-}
-
 .hero h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 1rem;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
@@ -143,56 +137,60 @@ body {
     margin-right: auto;
 }
 
-/* ===== Features ===== */
-.features {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
+/* ===== Steps Grid ===== */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
-.feature {
+.step-card {
+    background: var(--bg-card);
+    border: 1px dashed var(--border-strong);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    transition: transform 0.2s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+    background: #fafafa;
+}
+
+.step-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--gradient-glass);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    backdrop-filter: blur(10px);
-    text-align: left;
-    transition: all 0.2s ease;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.feature:hover {
-    border-color: var(--primary);
-    transform: translateX(4px);
+.step-header h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
 }
 
-.feature-icon {
-    font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
+.step-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    margin: 0;
+}
+
+.step-num {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-card);
-    border-radius: var(--radius-sm);
-}
-
-.feature-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.feature-text strong {
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.feature-text span {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+    font-size: 0.75rem;
+    border-radius: 50%;
+    /* Circle for numbers */
 }
 
 /* ===== Buttons ===== */
@@ -202,21 +200,24 @@ body {
     justify-content: center;
     gap: 0.5rem;
     padding: 1rem 2rem;
-    background: var(--gradient-primary);
+    background: var(--primary);
     color: white;
     font-size: 1rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     border: none;
-    border-radius: var(--radius-lg);
+    border-radius: 0px;
+    /* Sharp corners */
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: var(--shadow-glow);
     width: 100%;
 }
 
 .primary-btn:hover {
+    background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 0 60px rgba(99, 102, 241, 0.4);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
 .primary-btn:active {
@@ -310,58 +311,6 @@ body {
     padding: 0.875rem 1.25rem;
 }
 
-/* ===== How It Works Section ===== */
-.how-it-works {
-    padding: 3rem 1.5rem;
-    background: var(--bg-card);
-    border-top: 1px solid var(--border);
-}
-
-.how-it-works h2 {
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-}
-
-.steps {
-    max-width: 480px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.step {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-}
-
-.step-number {
-    width: 36px;
-    height: 36px;
-    background: var(--gradient-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
-
-.step-content h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.step-content p {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-}
-
 /* ===== Footer ===== */
 footer {
     padding: 2rem 1.5rem;
@@ -407,7 +356,7 @@ footer .note {
 .spinner {
     width: 48px;
     height: 48px;
-    border: 3px solid var(--border);
+    border: 3px solid #ddd;
     border-top-color: var(--primary);
     border-radius: 50%;
     margin: 0 auto 1rem;
@@ -415,7 +364,9 @@ footer .note {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #loading-state p {
@@ -425,10 +376,11 @@ footer .note {
 /* ===== Event Card ===== */
 .event-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
     padding: 2rem;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.05);
+    /* Stronger hard shadow */
 }
 
 .event-badge {
@@ -438,10 +390,11 @@ footer .note {
 .event-badge span {
     display: inline-block;
     padding: 0.375rem 0.875rem;
-    background: var(--gradient-primary);
-    border-radius: 100px;
+    background: var(--primary);
+    color: white;
+    border-radius: 0px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -459,8 +412,9 @@ footer .note {
     gap: 1rem;
     margin-bottom: 2rem;
     padding: 1.25rem;
-    background: var(--bg-elevated);
-    border-radius: var(--radius-md);
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    border-radius: var(--radius-sm);
 }
 
 .detail-row {
@@ -501,10 +455,13 @@ footer .note {
 .google-btn {
     background: white;
     color: #333;
+    border: 1px solid #ddd;
 }
 
 .google-btn:hover {
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+    background: #f9f9f9;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
+    border-color: #999;
 }
 
 .source-link {
@@ -526,7 +483,7 @@ footer .note {
     padding: 2rem;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-md);
 }
 
 .error-icon {
@@ -565,30 +522,9 @@ footer .note {
     .hero {
         padding: 4rem 2rem;
     }
-    
+
     .hero h1 {
         font-size: 2.5rem;
-    }
-    
-    .features {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .feature {
-        flex: 1;
-        min-width: 140px;
-        flex-direction: column;
-        text-align: center;
-        padding: 1.25rem;
-    }
-    
-    .feature:hover {
-        transform: translateY(-4px);
-    }
-    
-    .feature-text {
-        align-items: center;
     }
 }
 

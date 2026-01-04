@@ -16,6 +16,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serve": "^14.2.5"
+    "csso-cli": "^4.0.2",
+    "html-minifier-terser": "^7.2.0",
+    "serve": "^14.2.5",
+    "terser": "^5.44.1"
   }
 }

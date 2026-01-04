@@ -3,15 +3,14 @@
  * Handles offline caching and share target routing
  */
 
-const CACHE_NAME = 'add2cal-v1';
+const CACHE_NAME = 'add2cal-v16';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/styles.css',
     '/app.js',
     '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png'
+    '/icon.svg'
 ];
 
 // Install event - cache assets

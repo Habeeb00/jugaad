@@ -5,11 +5,8 @@
 
 // ===== Configuration =====
 const CONFIG = {
-    // Proxy URL for CORS bypass (will need to be deployed)
-    proxyUrl: 'https://api.allorigins.win/raw?url=',
-    // Alternative proxies if needed:
-    // proxyUrl: 'https://corsproxy.io/?',
-    // proxyUrl: '/api/proxy?url=',
+    // Our own CORS proxy on Vercel (fast & reliable)
+    proxyUrl: '/api/proxy?url=',
 
     // TinkerHub event URL pattern
     eventUrlPattern: /tinkerhub\.org\/events\/([A-Z0-9]+)\//i,
@@ -33,7 +30,6 @@ const elements = {
     manualBtn: document.getElementById('manual-btn'),
     retryBtn: document.getElementById('retry-btn'),
     addGoogleCal: document.getElementById('add-google-cal'),
-    downloadIcs: document.getElementById('download-ics'),
     eventTitle: document.getElementById('event-title'),
     eventType: document.getElementById('event-type'),
     eventDate: document.getElementById('event-date'),
@@ -98,16 +94,9 @@ function setupEventListeners() {
         }
     });
 
-    // Calendar buttons
     elements.addGoogleCal?.addEventListener('click', () => {
         if (currentEventData) {
             openGoogleCalendar(currentEventData);
-        }
-    });
-
-    elements.downloadIcs?.addEventListener('click', () => {
-        if (currentEventData) {
-            downloadIcsFile(currentEventData);
         }
     });
 
@@ -314,70 +303,88 @@ function parseEventHtml(html, sourceUrl) {
     else if (bodyText.includes('Meetup')) eventData.type = 'Meetup';
 
     // Extract dates - Look for date patterns in the HTML
-    // TinkerHub pages have dates like "Jan 10" and times like "9:00 AM" on separate lines
-    const allText = doc.body?.innerText || '';
+    // TinkerHub pages have squashed text like "Jan 103:30 AM" (no space between day and time)
+    let allText = doc.body?.innerText || '';
 
-    // Find all date and time patterns
-    const monthDayPattern = /(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2})/gi;
-    const timePattern = /(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
+    // IMPORTANT: Only parse text BEFORE "These might interest you" to avoid wrong data
+    const cutoffIndex = allText.indexOf('These might interest you');
+    if (cutoffIndex > -1) {
+        allText = allText.substring(0, cutoffIndex);
+    }
 
-    const monthMatches = [...allText.matchAll(monthDayPattern)];
-    const timeMatches = [...allText.matchAll(timePattern)];
+    // Combined pattern: "Jan 10 3:30 AM" or "Jan 103:30 AM" (with or without space)
+    // TinkerHub times are in UTC, we need to convert to IST (+5:30)
+    const dateTimePattern = /(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s*(\d{1,2})\s*(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
+
+    const dateTimeMatches = [...allText.matchAll(dateTimePattern)];
 
     // Parse the dates we found
     const year = new Date().getFullYear();
 
-    if (monthMatches.length >= 1 && timeMatches.length >= 1) {
-        // Store raw strings for display
-        eventData.rawStartDate = monthMatches[0][0];
-        eventData.rawStartTime = timeMatches[0][0];
+    // Helper to convert UTC time to IST (+5:30)
+    const convertUtcToIst = (hour, minute) => {
+        let newHour = hour + 5;
+        let newMinute = minute + 30;
+        if (newMinute >= 60) {
+            newMinute -= 60;
+            newHour += 1;
+        }
+        if (newHour >= 24) {
+            newHour -= 24;
+        }
+        return { hour: newHour, minute: newMinute };
+    };
 
-        // Parse start date components
-        const startMonth = parseMonth(monthMatches[0][1]);
-        const startDay = parseInt(monthMatches[0][2]);
-        const startHour = parseHour(parseInt(timeMatches[0][1]), timeMatches[0][3]);
-        const startMinute = parseInt(timeMatches[0][2]);
+    // Helper to format time for display
+    const formatTime = (hour, minute) => {
+        const isPM = hour >= 12;
+        const displayHour = hour % 12 || 12;
+        const displayMinute = minute.toString().padStart(2, '0');
+        return `${displayHour}:${displayMinute} ${isPM ? 'PM' : 'AM'}`;
+    };
 
-        // Create date in IST by adjusting for timezone offset
-        // IST is UTC+5:30, so we subtract 5:30 to store as UTC equivalent
-        eventData.startDate = createISTDate(year, startMonth, startDay, startHour, startMinute);
+    if (dateTimeMatches.length >= 1) {
+        // Parse start date/time
+        const startMonth = parseMonth(dateTimeMatches[0][1]);
+        const startDay = parseInt(dateTimeMatches[0][2]);
+        const startUtcHour = parseHour(parseInt(dateTimeMatches[0][3]), dateTimeMatches[0][5]);
+        const startUtcMinute = parseInt(dateTimeMatches[0][4]);
+
+        // Convert UTC to IST
+        const startIst = convertUtcToIst(startUtcHour, startUtcMinute);
+
+        // Store raw strings for display (in IST)
+        eventData.rawStartDate = `${dateTimeMatches[0][1]} ${startDay}`;
+        eventData.rawStartTime = formatTime(startIst.hour, startIst.minute);
+
+        // Create date in IST
+        eventData.startDate = createISTDate(year, startMonth, startDay, startIst.hour, startIst.minute);
 
         // If the date is in the past, assume next year
         const now = new Date();
         if (eventData.startDate < now) {
-            eventData.startDate = createISTDate(year + 1, startMonth, startDay, startHour, startMinute);
+            eventData.startDate = createISTDate(year + 1, startMonth, startDay, startIst.hour, startIst.minute);
         }
 
         // End date
-        if (monthMatches.length >= 2 && timeMatches.length >= 2) {
-            eventData.rawEndDate = monthMatches[1][0];
-            eventData.rawEndTime = timeMatches[1][0];
+        if (dateTimeMatches.length >= 2) {
+            const endMonth = parseMonth(dateTimeMatches[1][1]);
+            const endDay = parseInt(dateTimeMatches[1][2]);
+            const endUtcHour = parseHour(parseInt(dateTimeMatches[1][3]), dateTimeMatches[1][5]);
+            const endUtcMinute = parseInt(dateTimeMatches[1][4]);
 
-            const endMonth = parseMonth(monthMatches[1][1]);
-            const endDay = parseInt(monthMatches[1][2]);
-            const endHour = parseHour(parseInt(timeMatches[1][1]), timeMatches[1][3]);
-            const endMinute = parseInt(timeMatches[1][2]);
+            // Convert UTC to IST
+            const endIst = convertUtcToIst(endUtcHour, endUtcMinute);
 
-            eventData.endDate = createISTDate(year, endMonth, endDay, endHour, endMinute);
+            eventData.rawEndDate = `${dateTimeMatches[1][1]} ${endDay}`;
+            eventData.rawEndTime = formatTime(endIst.hour, endIst.minute);
+
+            eventData.endDate = createISTDate(year, endMonth, endDay, endIst.hour, endIst.minute);
 
             // If end is before start, assume next year
             if (eventData.endDate < eventData.startDate) {
-                eventData.endDate = createISTDate(eventData.startDate.getFullYear() + 1, endMonth, endDay, endHour, endMinute);
+                eventData.endDate = createISTDate(eventData.startDate.getFullYear() + 1, endMonth, endDay, endIst.hour, endIst.minute);
             }
-        } else if (timeMatches.length >= 2) {
-            // Same day, different end time
-            eventData.rawEndDate = eventData.rawStartDate;
-            eventData.rawEndTime = timeMatches[1][0];
-
-            const endHour = parseHour(parseInt(timeMatches[1][1]), timeMatches[1][3]);
-            const endMinute = parseInt(timeMatches[1][2]);
-            eventData.endDate = createISTDate(
-                eventData.startDate.getFullYear(),
-                startMonth,
-                startDay,
-                endHour,
-                endMinute
-            );
         } else {
             // Default duration (2 hours)
             eventData.endDate = new Date(eventData.startDate.getTime() + CONFIG.defaultDurationHours * 60 * 60 * 1000);
@@ -385,27 +392,52 @@ function parseEventHtml(html, sourceUrl) {
         }
     }
 
-    // Extract location - look for TinkerSpace or location-related text
-    const locationPatterns = [
-        /TinkerSpace\s+\w+/gi,
-        /Location:\s*([^\n]+)/gi,
-        /Venue:\s*([^\n]+)/gi
-    ];
+    // Extract location - refined strategy
+    // 1. Look for .address class (most accurate venue)
+    const addressEl = doc.querySelector('.address');
+    if (addressEl && addressEl.textContent.trim()) {
+        eventData.location = addressEl.textContent.trim();
+    }
 
-    for (const pattern of locationPatterns) {
-        const match = allText.match(pattern);
-        if (match) {
-            eventData.location = match[0].replace(/^(Location|Venue):\s*/i, '').trim();
-            break;
+    // 2. Look for organizer (An event by...)
+    // This helps when the venue is generic like "D2 Class"
+    const allElements = Array.from(doc.querySelectorAll('div, span, p, h4, h5'));
+    const eventByLabel = allElements.find(el =>
+        el.textContent.trim().toLowerCase() === 'an event by' && el.children.length === 0
+    );
+
+    if (eventByLabel) {
+        // The organizer name is usually in a badge or next sibling element
+        const organizerEl = eventByLabel.parentElement?.querySelector('[class*="badge"], a, span:not(:first-child)');
+        const organizer = organizerEl?.textContent?.trim();
+
+        if (organizer && !organizer.toLowerCase().includes('tinkerhub')) {
+            if (eventData.location) {
+                // If venue and organizer are same or redundant, don't repeat
+                if (!eventData.location.includes(organizer) && !organizer.includes(eventData.location)) {
+                    eventData.location = `${eventData.location}, ${organizer}`;
+                }
+            } else {
+                eventData.location = organizer;
+            }
         }
     }
 
-    // If no location found, try to find TinkerSpace mentions
+    // 3. Fallback to broad text search
     if (!eventData.location) {
-        const tinkerSpaceMatch = allText.match(/TinkerSpace\s*\w*/i);
-        if (tinkerSpaceMatch) {
-            eventData.location = tinkerSpaceMatch[0];
+        if (allText.toLowerCase().includes('online')) {
+            eventData.location = 'Online';
+        } else {
+            const locationMatch = allText.match(/(?:Location|Venue):\s*([^\n]+)/i);
+            if (locationMatch) {
+                eventData.location = locationMatch[1].trim();
+            }
         }
+    }
+
+    // Final cleanup: if nothing found but TinkerSpace is mentioned in a location-like context
+    if (!eventData.location && allText.includes('TinkerSpace')) {
+        eventData.location = 'TinkerSpace';
     }
 
     return eventData;
@@ -529,61 +561,47 @@ function openGoogleCalendar(eventData) {
         return;
     }
 
-    const params = new URLSearchParams({
-        action: 'TEMPLATE',
-        text: eventData.title,
-        dates: `${formatDateForGoogle(eventData.startDate)}/${formatDateForGoogle(eventData.endDate)}`,
-        details: `${eventData.description}\n\nOriginal event: ${eventData.sourceUrl}`,
-        location: eventData.location || '',
-        ctz: CONFIG.timezone
-    });
-
-    const googleCalUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
-    window.open(googleCalUrl, '_blank');
-}
-
-function downloadIcsFile(eventData) {
-    if (!eventData.startDate || !eventData.endDate) {
-        alert('Could not determine event dates. Please check the original event page.');
-        return;
-    }
-
-    const formatIcsDate = (date) => {
+    // Format dates for Google Calendar (UTC format for intent)
+    const formatDateForIntent = (date) => {
         const pad = (n) => n.toString().padStart(2, '0');
+        // Convert to UTC ISO format
         return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}00`;
     };
 
-    const uid = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}@add2cal`;
-    const now = new Date();
+    const startDate = formatDateForIntent(eventData.startDate);
+    const endDate = formatDateForIntent(eventData.endDate);
+    const title = encodeURIComponent(eventData.title);
+    const location = encodeURIComponent(eventData.location || '');
+    const details = encodeURIComponent(`${eventData.description}\n\nOriginal event: ${eventData.sourceUrl}`);
 
-    const icsContent = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Add to Calendar//TinkerHub Events//EN',
-        'CALSCALE:GREGORIAN',
-        'METHOD:PUBLISH',
-        'BEGIN:VEVENT',
-        `UID:${uid}`,
-        `DTSTAMP:${formatIcsDate(now)}`,
-        `DTSTART;TZID=${CONFIG.timezone}:${formatIcsDate(eventData.startDate)}`,
-        `DTEND;TZID=${CONFIG.timezone}:${formatIcsDate(eventData.endDate)}`,
-        `SUMMARY:${eventData.title.replace(/,/g, '\\,')}`,
-        `DESCRIPTION:${(eventData.description + '\\n\\nOriginal event: ' + eventData.sourceUrl).replace(/\n/g, '\\n').replace(/,/g, '\\,')}`,
-        `LOCATION:${(eventData.location || '').replace(/,/g, '\\,')}`,
-        `URL:${eventData.sourceUrl}`,
-        'STATUS:CONFIRMED',
-        'END:VEVENT',
-        'END:VCALENDAR'
-    ].join('\r\n');
+    // Check if on Android (mobile)
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    if (isAndroid) {
+        // Use Android intent to open Google Calendar app directly
+        const intentUrl = `intent://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&location=${location}&details=${details}&ctz=${CONFIG.timezone}#Intent;scheme=https;package=com.google.android.calendar;end`;
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${eventData.title.replace(/[^a-z0-9]/gi, '_').substring(0, 50)}.ics`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+        // Create a hidden link and click it
+        const link = document.createElement('a');
+        link.href = intentUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        // For desktop/iOS, open Google Calendar web
+        const params = new URLSearchParams({
+            action: 'TEMPLATE',
+            text: eventData.title,
+            dates: `${startDate}/${endDate}`,
+            details: `${eventData.description}\n\nOriginal event: ${eventData.sourceUrl}`,
+            location: eventData.location || '',
+            ctz: CONFIG.timezone
+        });
+
+        const googleCalUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+        window.open(googleCalUrl, '_blank');
+    }
 }
+
+
