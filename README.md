@@ -1,6 +1,8 @@
 # Jugad
 
-**Jugad** is a lightweight Progressive Web App (PWA) designed to instantly turn TinkerHub event links into Google Calendar invites. Stop manually copy-pasting dates and times—just share the link to Jugad, and it handles the rest.
+**Jugad** turns TinkerHub event links into Google Calendar invites instantly.
+
+Works flawlessly on **Android** (via Share Target) and **Web** (Desktop/Mobile). Stop manually copy-pasting—just share or paste the link, and Jugad handles the rest.
 
 ![Jugad App Screenshot](/icon.png)
 
