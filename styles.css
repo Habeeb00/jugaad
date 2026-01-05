@@ -60,6 +60,11 @@ body {
     display: none !important;
 }
 
+/* Generic hidden utility */
+.hidden {
+    display: none !important;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -117,6 +122,40 @@ body {
     width: 100%;
     font-weight: 400;
     margin: 0;
+}
+
+/* ===== OS Toggle ===== */
+.os-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(var(--secondary));
+    padding: 0.25rem;
+    border-radius: var(--radius);
+    gap: 0.25rem;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    color: hsl(var(--foreground));
+}
+
+.toggle-btn.active {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 /* ===== Cards & Steps ===== */

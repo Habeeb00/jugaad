@@ -37,7 +37,14 @@ const elements = {
     eventLocation: document.getElementById('event-location'),
     eventDescriptionShort: document.getElementById('event-description-short'),
     eventSourceLink: document.getElementById('event-source-link'),
-    errorMessage: document.getElementById('error-message')
+    errorMessage: document.getElementById('error-message'),
+    backHomeBtn: document.getElementById('back-home-btn'),
+    btnAndroid: document.getElementById('btn-android'),
+    btnIos: document.getElementById('btn-ios'),
+    stepsAndroid: document.getElementById('steps-android'),
+    stepsIos: document.getElementById('steps-ios'),
+    actionAndroid: document.getElementById('action-android'),
+    actionIos: document.getElementById('action-ios')
 };
 
 // ===== State =====
@@ -112,6 +119,37 @@ function setupEventListeners() {
             deferredInstallPrompt = null;
         }
     });
+
+    // Back to Home button
+    elements.backHomeBtn?.addEventListener('click', () => {
+        // clear URL params
+        window.history.pushState({}, '', '/');
+        // Reset current event data
+        currentEventData = null;
+        showLandingPage();
+    });
+
+    // OS Toggles
+    elements.btnAndroid?.addEventListener('click', () => switchOs('android'));
+    elements.btnIos?.addEventListener('click', () => switchOs('ios'));
+}
+
+function switchOs(os) {
+    if (os === 'android') {
+        elements.btnAndroid?.classList.add('active');
+        elements.btnIos?.classList.remove('active');
+        elements.stepsAndroid?.classList.remove('hidden');
+        elements.stepsIos?.classList.add('hidden');
+        elements.actionAndroid?.classList.remove('hidden');
+        elements.actionIos?.classList.add('hidden');
+    } else {
+        elements.btnIos?.classList.add('active');
+        elements.btnAndroid?.classList.remove('active');
+        elements.stepsIos?.classList.remove('hidden');
+        elements.stepsAndroid?.classList.add('hidden');
+        elements.actionIos?.classList.remove('hidden');
+        elements.actionAndroid?.classList.add('hidden');
+    }
 }
 
 // ===== PWA Install =====

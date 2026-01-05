@@ -3,7 +3,7 @@
  * Handles offline caching and share target routing
  */
 
-const CACHE_NAME = 'add2cal-v38';
+const CACHE_NAME = 'add2cal-v43';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
