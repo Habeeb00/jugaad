@@ -55,7 +55,7 @@ function initApp() {
     const path = window.location.pathname;
 
     // Handle share target route
-    if (path === '/share' || path === '/share.html' || urlParams.has('url') || urlParams.has('text')) {
+    if (path === '/share' || path === '/share.html' || urlParams.has('url') || urlParams.has('text') || urlParams.has('input')) {
         handleShareTarget(urlParams);
     } else {
         showLandingPage();
@@ -187,10 +187,12 @@ function handleShareTarget(urlParams) {
     let eventUrl = urlParams.get('url') || '';
     const text = urlParams.get('text') || '';
     const title = urlParams.get('title') || '';
+    const input = urlParams.get('input') || '';
 
-    // If no direct URL, try to extract from text
-    if (!eventUrl && text) {
-        const urlMatch = text.match(/https?:\/\/[^\s]+/);
+    // If no direct URL, try to extract from text or input
+    const textToSearch = input || text;
+    if (!eventUrl && textToSearch) {
+        const urlMatch = textToSearch.match(/https?:\/\/[^\s]+/);
         if (urlMatch) {
             eventUrl = urlMatch[0];
         }
