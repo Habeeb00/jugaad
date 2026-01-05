@@ -212,10 +212,9 @@ body {
 }
 
 .step-card p {
-    font-size: 0.825rem;
+    font-size: 0.75rem;
     color: hsl(var(--muted-foreground));
     line-height: 1.4;
-    margin-top: auto;
 }
 
 /* ===== Buttons ===== */
